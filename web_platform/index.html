@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neurogenesis Web Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="mobile_responsive/responsive.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import React from 'https://cdn.jsdelivr.net/npm/react@18.2.0/+esm';
+    import ReactDOM from 'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/+esm';
+    import UserDashboard from './user_dashboard/dashboard.jsx';
+    import TeamDashboard from './team_dashboard/team.jsx';
+    import ChatInterface from './chat_interface/chat.jsx';
+    import ProjectBrowser from './project_browser/browser.jsx';
+    import SettingsPanel from './settings_panel/settings.jsx';
+
+    const App = () => {
+      const [activeTab, setActiveTab] = React.useState('user');
+
+      return (
+        <div>
+          <nav className="bg-gray-800 text-white p-4">
+            <button onClick={() => setActiveTab('user')} className="mr-4">User Dashboard</button>
+            <button onClick={() => setActiveTab('team')} className="mr-4">Team Dashboard</button>
+            <button onClick={() => setActiveTab('chat')} className="mr-4">Chat</button>
+            <button onClick={() => setActiveTab('browser')} className="mr-4">Projects</button>
+            <button onClick={() => setActiveTab('settings')}>Settings</button>
+          </nav>
+          {activeTab === 'user' && <UserDashboard />}
+          {activeTab === 'team' && <TeamDashboard />}
+          {activeTab === 'chat' && <ChatInterface conversationId="default" />}
+          {activeTab === 'browser' && <ProjectBrowser />}
+          {activeTab === 'settings' && <SettingsPanel />}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
