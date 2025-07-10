@@ -1,37 +1,36 @@
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict
-from sklearn.ensemble import RandomForestClassifier
-import pandas as pd
-import numpy as np
+from typing import Dict
 from fastapi.security import OAuth2PasswordBearer
-from datetime import datetime
 from database import SessionLocal
+from datetime import datetime
+from pathlib import Path
+import json
 
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-class TargetIdentification(BaseModel):
-    features: List[Dict[str, float]]
-    disease_id: str
+class TargetRequest(BaseModel):
+    disease: str
+    criteria: Dict
 
 class TargetIdentifier:
-    def __init__(self):
-        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
-
-    async def identify_targets(self, features: List[Dict[str, float]], disease_id: str) -> Dict:
-        df = pd.DataFrame(features)
-        X = df.values
-        # Placeholder: In real implementation, load trained model and data
-        predictions = self.model.predict_proba(X)
-
+    async def identify_target(self, user_id: str, request: TargetRequest) -> Dict:
+        target_id = f"target_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        output_path = Path("E:/Neurogenesis/targets") / user_id / f"{target_id}.json"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        target_data = {
+            "target_id": target_id,
+            "disease": request.disease,
+            "targets": ["protein_X", "protein_Y"],
+            "criteria": request.criteria
+        }
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(target_data, f)
         return {
-            "disease_id": disease_id,
-            "targets": [
-                {"target_id": f"target_{i}", "probability": float(prob[1])}
-                for i, prob in enumerate(predictions)
-            ],
-            "identified_at": datetime.utcnow()
+            "target_id": target_id,
+            "disease": request.disease,
+            "created_at": datetime.utcnow()
         }
 
 def get_db():
@@ -41,13 +40,9 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/targets/identify")
-async def identify_targets(
-    request: TargetIdentification,
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
+@app.post("/targets")
+async def identify_target(request: TargetRequest, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     from user_management.authentication.auth import get_current_user
     user = await get_current_user(token, db)
     identifier = TargetIdentifier()
-    return await identifier.identify_targets(request.features, request.disease_id)
+    return await identifier.identify_target(user.id, request)
