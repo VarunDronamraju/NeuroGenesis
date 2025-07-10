@@ -14,7 +14,7 @@ app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class APICall(BaseModel):
-    service: str
+    service: str  # e.g., "core_ai", "clinical_platform"
     endpoint: str
     payload: Dict
 
@@ -29,6 +29,7 @@ class APIGateway:
     async def forward_request(self, user_id: str, call: APICall) -> Dict:
         if call.service not in self.services:
             raise HTTPException(status_code=400, detail="Invalid service")
+
         url = f"{self.services[call.service]}{call.endpoint}"
         try:
             response = requests.post(url, json=call.payload, headers={"X-User-ID": user_id})

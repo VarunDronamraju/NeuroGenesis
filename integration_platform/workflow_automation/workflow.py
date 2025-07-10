@@ -17,7 +17,7 @@ class WorkflowCreate(BaseModel):
 class WorkflowManager:
     async def create_workflow(self, user_id: str, workflow: WorkflowCreate) -> Dict:
         workflow_id = f"workflow_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
-        workflow_path = Path(f"E:/Neurogenesis/workflows/{user_id}/{workflow_id}.json")
+        workflow_path = Path(r"E:\Neurogenesis\workflows") / user_id / f"{workflow_id}.json"
         workflow_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(workflow_path, "w") as f:
@@ -35,7 +35,7 @@ class WorkflowManager:
         }
 
     async def execute_workflow(self, user_id: str, workflow_id: str) -> Dict:
-        workflow_path = Path(f"E:/Neurogenesis/workflows/{user_id}/{workflow_id}.json")
+        workflow_path = Path(r"E:\Neurogenesis\workflows") / user_id / f"{workflow_id}.json"
         if not workflow_path.exists():
             raise HTTPException(status_code=404, detail="Workflow not found")
 

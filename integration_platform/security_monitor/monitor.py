@@ -15,19 +15,20 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class SecurityCheck(BaseModel):
     resource_id: str
-    resource_type: str
+    resource_type: str  # e.g., "dataset", "workflow"
 
 class SecurityMonitor:
     def __init__(self):
         self.logger = logging.getLogger("SecurityMonitor")
         self.logger.setLevel(logging.INFO)
-        handler = logging.FileHandler("E:/Neurogenesis/logs/security.log")
+        handler = logging.FileHandler(r"E:\Neurogenesis\logs\security.log")
         handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
         self.logger.addHandler(handler)
 
     async def check_security(self, user_id: str, check: SecurityCheck) -> Dict:
         status = "secure" if hash(user_id + check.resource_id) % 2 == 0 else "issue_detected"
         self.logger.info(f"Security check for {check.resource_type} {check.resource_id} by {user_id}: {status}")
+
         return {
             "check_id": f"check_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
             "resource_id": check.resource_id,

@@ -4,10 +4,10 @@ from typing import Dict
 from fastapi.security import OAuth2PasswordBearer
 from database import SessionLocal
 import redis
-import json
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 class NotificationCreate(BaseModel):
     recipient_id: str
     message: str
-    channel: str
+    channel: str  # e.g., "email", "in-app"
 
 class NotificationService:
     def __init__(self):
