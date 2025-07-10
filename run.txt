@@ -1,0 +1,11 @@
+git config --global --add safe.directory E:/Neurogenesis
+git add .
+git commit -m "Initial commit of NeuroGenesis project structure"
+git branch -M main
+git remote add origin https://github.com/VarunDronamraju/NeuroGenesis.git
+git push -u origin main
+git add .
+git commit -m "Initial commit of NeuroGenesis project structure"
+git branch -M main
+git remote add origin https://github.com/VarunDronamraju/NeuroGenesis.git
+git push -u origin main
