@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
+from typing import Dict
 from fastapi.security import OAuth2PasswordBearer
 from database import SessionLocal
 from datetime import datetime
@@ -13,7 +14,7 @@ class DocumentShare(BaseModel):
     description: str
 
 class DocumentSharing:
-    async def share_document(self, user_id: str, team_id: str, file: UploadFile, description: str):
+    async def share_document(self, user_id: str, team_id: str, file: UploadFile, description: str) -> Dict:
         document_id = f"doc_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
         document_path = Path("E:/Neurogenesis/documents") / user_id / f"{document_id}_{file.filename}"
         document_path.parent.mkdir(parents=True, exist_ok=True)
